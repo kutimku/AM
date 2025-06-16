@@ -13,6 +13,17 @@
     .header-inputs { margin-bottom: 20px; }
     .header-inputs input { margin-right: 10px; padding: 5px; }
     .submit-btn { margin-top: 20px; padding: 10px 20px; font-size: 16px; }
+   
+  .radio-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+  .form-section {
+    margin-bottom: 20px;
+  }
+
   </style>
 </head>
 <body>
@@ -32,6 +43,7 @@
         </tr>
       </thead>
       <tbody>
+        <p><strong>Keterangan:</strong> B = Bagus, R = Rusak, NA = Tidak Diperiksa</p>
         <!-- ITEM LIST START -->
         <script>
           const items = [
@@ -71,9 +83,9 @@
                 <td>${index + 1}</td>
                 <td>${item}</td>
                 <td>
-                  <label><input type="radio" name="${name}" value="Aman" required> Aman</label>
-                  <label><input type="radio" name="${name}" value="Tidak Aman"> Tidak Aman</label>
-                  <label><input type="radio" name="${name}" value="N/A"> N/A</label>
+                  <label><input type="radio" name="item1" value="B"> B</label>
+                  <label><input type="radio" name="item1" value="R"> R</label>
+                  <label><input type="radio" name="item1" value="NA"> NA</label>
                 </td>
               `;
               tbody.appendChild(row);
