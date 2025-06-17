@@ -10,7 +10,7 @@
       padding: 10px;
     }
     label {
-      font-weight: bold;
+      font-weight: normal;
     }
     input[type="text"], input[type="date"] {
       width: 100%;
@@ -64,7 +64,7 @@
         </tr>
       </thead>
       <tbody>
-        <p><strong>Keterangan:</strong> B = Bagus, R = Rusak, NA = Tidak Diperiksa</p>
+        <p><strong>Keterangan:</strong> B = Bagus, R = Rusak, O = Tidak Diperlukan</p>
         <!-- ITEM LIST START -->
         <script>
           const items = [
@@ -106,7 +106,7 @@
                 <td>
                   <label><input type="radio" name="item1" value="B"> B</label>
                   <label><input type="radio" name="item1" value="R"> R</label>
-                  <label><input type="radio" name="item1" value="NA"> NA</label>
+                  <label><input type="radio" name="item1" value="O"> O</label>
                 </td>
               `;
               tbody.appendChild(row);
