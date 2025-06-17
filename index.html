@@ -58,7 +58,7 @@
     <label>Tanggal: <input type="date" name="tanggal" required></label><br>
     <label>No. ID: <input type="text" name="id" required></label><br>
     <label>Unit / Alat: <input type="text" name="unit" required></label><br><br>
-   <p class="keterangan"><strong>Keterangan:</strong> B = Bagus, R = Rusak, O = Tidak Diperlukan</p>
+   <p class="keterangan"><strong>Keterangan:</strong> B = Bagus, R = Rusak, NA = Tidak Diperlukan</p>
     <div id="itemsContainer"></div>
 
     <button type="submit" class="submit-btn">Kirim</button>
@@ -103,7 +103,7 @@
         <div class="radio-group">
           <label><input type="radio" name="${itemId}" value="B"> B</label>
           <label><input type="radio" name="${itemId}" value="R"> R</label>
-          <label><input type="radio" name="${itemId}" value="O"> O</label>
+          <label><input type="radio" name="${itemId}" value="NA"> NA</label>
         </div>
         <div class="keterangan-rusak" id="ket_${itemId}">
           <input type="text" name="ket_${itemId}" placeholder="Tulis keterangan kerusakan...">
