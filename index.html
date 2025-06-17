@@ -8,99 +8,60 @@
     body {
       font-family: Arial, sans-serif;
       padding: 10px;
-      font-size: 16px;
     }
 
-    label {
+    .item-row {
+      margin-bottom: 20px;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 10px;
+    }
+
+    .item-name {
+      font-size: 15px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .radio-group {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 10px;
+    }
+
+    .radio-group label {
+      display: flex;
+      align-items: center;
+      gap: 5px;
       font-weight: normal;
+    }
+
+    .keterangan-rusak {
+      display: none;
+      margin-top: 5px;
     }
 
     input[type="text"], input[type="date"] {
       width: 100%;
       padding: 5px;
-      margin-bottom: 15px;
+      margin-bottom: 10px;
+    }
+
+    .submit-btn {
+      padding: 10px 20px;
       font-size: 16px;
     }
-
-    .form-section {
-      margin-bottom: 15px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    th, td {
-      padding: 6px;
-      border-bottom: 1px solid #ccc;
-      vertical-align: top;
-    }
-
-     .keterangan {
-      font-size: 14px;
-      margin-top: 15px;
-      padding: 10px;
-      background: #f2f2f2;
-      border-left: 4px solid #555;
-    }
-
-    .keterangan-rusak {
-      margin-top: 5px;
-    }
-
-    .keterangan-rusak input {
-      width: 100%;
-      padding: 5px;
-      font-size: 14px;
-    }
-
-    @media (max-width: 580px) {
-      th, td {
-        font-size: 16px;
-      }
-
-    .radio-group {
-  display: flex;
-  gap: 20px; 
-  margin-bottom: 10px;
-  margin-top: 5px;
-}
-
-.radio-group label {
-  margin: 0;
-  font-size: 15px;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-</style>
+  </style>
 </head>
 <body>
   <h2>Form Pemeriksaan P2H</h2>
   <form id="p2hForm">
-    <div class="header-inputs">
-      <label>Tanggal: <input type="date" name="tanggal" required></label><br>
-      <label>No. ID: <input type="text" name="id" required></label><br>
-      <label>Unit / Alat: <input type="text" name="unit" required></label>
-    </div>
+    <label>Tanggal: <input type="date" name="tanggal" required></label><br>
+    <label>No. ID: <input type="text" name="id" required></label><br>
+    <label>Unit / Alat: <input type="text" name="unit" required></label><br><br>
 
-    <p class="keterangan"><strong>Keterangan:</strong> B = Bagus, R = Rusak, O = Tidak Diperlukan</p>
+    <div id="itemsContainer"></div>
 
-    <table>
-      <thead>
-        <tr>
-          <th>No</th>
-          <th>Item Pemeriksaan</th>
-          <th>Kondisi</th>
-        </tr>
-      </thead>
-      <tbody id="formItems">
-        <!-- Generated items here -->
-      </tbody>
-    </table>
-
-    <button type="submit">Kirim</button>
+    <button type="submit" class="submit-btn">Kirim</button>
   </form>
 
   <script>
@@ -110,51 +71,40 @@
       "Rem kaki & tangan <7 klik",
       "Lampu depan/sein/ atas/rotari",
       "Lampu belakang/stop/sein",
-      "Alarm mundur",
-      "Air radiator",
-      "Oli Mesin",
-      "Minyak rem & power steering",
-      "Fun belt"
+      "Tambahan 1",
+      "Tambahan 2"
     ];
 
-    const tbody = document.getElementById("formItems");
+    const container = document.getElementById('itemsContainer');
 
     items.forEach((item, index) => {
-      const name = `item_${index + 1}`;
-
-      const row = document.createElement("tr");
-      row.innerHTML = `
-        <td>${index + 1}</td>
-        <td>${item}</td>
-        <td>
-          <div class="radio-group">
-            <label><input type="radio" name="${name}" value="B"> B</label>
-            <label><input type="radio" name="${name}" value="R"> R</label>
-            <label><input type="radio" name="${name}" value="O"> O</label>
-          </div>
-          <div class="keterangan-rusak" id="${name}_keterangan" style="display: none;">
-            <input type="text" name="${name}_detail" placeholder="Tuliskan keterangan kerusakan">
-          </div>
-        </td>
+      const itemId = `item_${index}`;
+      const div = document.createElement('div');
+      div.className = 'item-row';
+      div.innerHTML = `
+        <div class="item-name">${item}</div>
+        <div class="radio-group">
+          <label><input type="radio" name="${itemId}" value="B"> B</label>
+          <label><input type="radio" name="${itemId}" value="R"> R</label>
+          <label><input type="radio" name="${itemId}" value="O"> O</label>
+        </div>
+        <div class="keterangan-rusak" id="ket_${itemId}">
+          <input type="text" name="ket_${itemId}" placeholder="Tulis keterangan kerusakan...">
+        </div>
       `;
+      container.appendChild(div);
 
-      tbody.appendChild(row);
-
-      // Tambahkan event listener setelah elemen ditambahkan
-      setTimeout(() => {
-        const radios = document.getElementsByName(name);
-        const ketDiv = document.getElementById(`${name}_keterangan`);
-
-        radios.forEach(radio => {
-          radio.addEventListener("change", () => {
-            if (radio.value === "R" && radio.checked) {
-              ketDiv.style.display = "block";
-            } else if (radio.checked) {
-              ketDiv.style.display = "none";
-            }
-          });
+      // Event listener saat memilih R
+      div.querySelectorAll(`input[name="${itemId}"]`).forEach(radio => {
+        radio.addEventListener('change', () => {
+          const ketBox = document.getElementById(`ket_${itemId}`);
+          if (radio.value === 'R') {
+            ketBox.style.display = 'block';
+          } else {
+            ketBox.style.display = 'none';
+          }
         });
-      }, 0);
+      });
     });
   </script>
 </body>
