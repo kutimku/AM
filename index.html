@@ -165,5 +165,39 @@
       });
     });
   </script>
+<button type="button" onclick="downloadTXT()">Simpan Bukti ke HP (.txt)</button>
+
+<script>
+function downloadTXT() {
+  const tanggal = document.querySelector('input[name="tanggal"]').value;
+  const id = document.querySelector('input[name="id"]').value;
+  const unit = document.querySelector('input[name="unit"]').value;
+  
+  let hasil = `Bukti Pemeriksaan P2H\n`;
+  hasil += `Tanggal: ${tanggal}\nID: ${id}\nUnit: ${unit}\n\n`;
+
+  const radios = document.querySelectorAll('input[type="radio"]:checked');
+  radios.forEach(radio => {
+    const itemLabel = radio.closest('tr').querySelector('td:nth-child(2)').textContent.trim();
+    const nilai = radio.value;
+    hasil += `${itemLabel}: ${nilai}\n`;
+
+    const inputKet = radio.closest('tr').querySelector('input[type="text"]');
+    if (nilai === "R" && inputKet && inputKet.value.trim() !== "") {
+      hasil += `  Keterangan: ${inputKet.value.trim()}\n`;
+    }
+  });
+
+  const blob = new Blob([hasil], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `P2H_${unit}_${tanggal}.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+</script>
+
+  
 </body>
 </html>
