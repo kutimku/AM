@@ -14,10 +14,11 @@
       font-weight: normal;
     }
 
-    input[type="text"], input[type="date"] {
+    input[type="text"],
+    input[type="date"] {
       width: 100%;
       padding: 5px;
-      margin-bottom: 15px;
+      margin-bottom: 10px;
     }
 
     .form-section {
@@ -29,21 +30,30 @@
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
       border-bottom: 1px solid #ccc;
       padding-bottom: 5px;
     }
 
     .item-name {
-      flex: 1 1 55%;
+      flex: 1 1 60%;
       font-size: 14px;
     }
 
     .radio-group {
-      flex: 1 1 45%;
+      flex: 1 1 35%;
       display: flex;
       justify-content: space-between;
-      gap: 5px;
+      gap: 10px;
+    }
+
+    .radio-group label {
+      font-weight: normal;
+    }
+
+    .header-inputs label {
+      display: block;
+      margin-bottom: 10px;
     }
 
     .keterangan {
@@ -54,90 +64,98 @@
       border-left: 4px solid #555;
     }
 
+    button.submit-btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+    }
+
     @media (max-width: 580px) {
-      .item-name {
+      .item-name, .radio-group {
         flex: 1 1 100%;
+      }
+      .item-name {
         margin-bottom: 5px;
       }
-
       .radio-group {
-        flex: 1 1 100%;
         justify-content: space-around;
-        gap: 10px;
+        gap: 12px;
       }
     }
   </style>
 </head>
 <body>
   <h2>Form Pemeriksaan P2H</h2>
+
   <form id="p2hForm">
     <div class="header-inputs">
-      <label>Tanggal: <input type="date" name="tanggal" required></label>
-      <label>No. ID: <input type="text" name="id" required></label>
-      <label>Unit / Alat: <input type="text" name="unit" required></label>
+      <label>Tanggal:
+        <input type="date" name="tanggal" required>
+      </label>
+      <label>No. ID:
+        <input type="text" name="id" required>
+      </label>
+      <label>Unit / Alat:
+        <input type="text" name="unit" required>
+      </label>
     </div>
-    <table>
-      <thead>
-        <tr>
-          <th>No</th>
-          <th>Item Pemeriksaan</th>
-          <th>Kondisi</th>
-        </tr>
-      </thead>
-      <tbody>
-        <p><strong>Keterangan:</strong> B = Bagus, R = Rusak, O = Tidak Diperlukan</p>
-        <!-- ITEM LIST START -->
-        <script>
-          const items = [
-            "Kondisi Kemudi",
-            "Sabuk pengaman",
-            "Rem kaki & tangan <7 klik",
-            "Lampu depan/sein/ atas/rotari",
-            "Lampu belakang/stop/sein",
-            "Alarm mundur",
-            "Air radiator",
-            "Oli Mesin",
-            "Minyak rem & power steering",
-            "Fun belt",
-            "Air pembersih kaca",
-            "Jarum penunjuk berfungsi",
-            "Lampu indikator",
-            "Kondisi ban",
-            "Wiper",
-            "Spion",
-            "Klakson",
-            "Nomor kendaraan & pita reflektor",
-            "Stiker next service",
-            "Segi tiga pengaman",
-            "Dongkrak & Kunci roda",
-            "Alat Pemadam",
-            "Kotak P3K",
-            "Tempat tiang bendera",
-            "Radio Komunikasi"
-          ];
 
-          document.addEventListener("DOMContentLoaded", () => {
-            const tbody = document.querySelector("tbody");
-            items.forEach((item, index) => {
-              const name = `item_${index + 1}`;
-              const row = document.createElement("tr");
-              row.innerHTML = `
-                <td>${index + 1}</td>
-                <td>${item}</td>
-                <td>
-                  <label><input type="radio" name="item1" value="B"> B</label>
-                  <label><input type="radio" name="item1" value="R"> R</label>
-                  <label><input type="radio" name="item1" value="O"> O</label>
-                </td>
-              `;
-              tbody.appendChild(row);
-            });
-          });
-        </script>
-        <!-- ITEM LIST END -->
-      </tbody>
-    </table>
+    <div class="keterangan">
+      <strong>Keterangan:</strong> B = Bagus, R = Rusak, NA = Tidak Diperiksa
+    </div>
+
+    <!-- ITEM LIST START -->
+    <div id="itemList"></div>
+    <!-- ITEM LIST END -->
+
     <button type="submit" class="submit-btn">Kirim</button>
   </form>
+
+  <script>
+    const items = [
+      "Kondisi Kemudi",
+      "Sabuk pengaman",
+      "Rem kaki & tangan <7 klik",
+      "Lampu depan/sein/ atas/rotari",
+      "Lampu belakang/stop/sein",
+      "Alarm mundur",
+      "Air radiator",
+      "Oli Mesin",
+      "Minyak rem & power steering",
+      "Fun belt",
+      "Air pembersih kaca",
+      "Jarum penunjuk berfungsi",
+      "Lampu indikator",
+      "Kondisi ban",
+      "Wiper",
+      "Spion",
+      "Klakson",
+      "Nomor kendaraan & pita reflektor",
+      "Stiker next service",
+      "Segi tiga pengaman",
+      "Dongkrak & Kunci roda",
+      "Alat Pemadam",
+      "Kotak P3K",
+      "Tempat tiang bendera",
+      "Radio Komunikasi"
+    ];
+
+    const itemList = document.getElementById("itemList");
+
+    items.forEach((item, index) => {
+      const name = `item_${index + 1}`;
+      const div = document.createElement("div");
+      div.className = "item-row";
+      div.innerHTML = `
+        <div class="item-name">${item}</div>
+        <div class="radio-group">
+          <label><input type="radio" name="${name}" value="B"> B</label>
+          <label><input type="radio" name="${name}" value="R"> R</label>
+          <label><input type="radio" name="${name}" value="NA"> NA</label>
+        </div>
+      `;
+      itemList.appendChild(div);
+    });
+  </script>
 </body>
 </html>
