@@ -51,6 +51,9 @@
       font-size: 16px;
     }
   </style>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 </head>
 <body>
   <h2>Form Pemeriksaan P2H</h2>
@@ -165,40 +168,40 @@
       });
     });
   </script>
-<button type="button" onclick="downloadTXT()">Simpan Bukti ke HP (.txt)</button>
-
-<script>
-function downloadTXT() {
-   console.log("Tombol ditekan!"); // Tambahin ini
-  const tanggal = document.querySelector('input[name="tanggal"]').value;
-  const id = document.querySelector('input[name="id"]').value;
-  const unit = document.querySelector('input[name="unit"]').value;
   
-  let hasil = `Bukti Pemeriksaan P2H\n`;
-  hasil += `Tanggal: ${tanggal}\nID: ${id}\nUnit: ${unit}\n\n`;
+<script>
+  async function downloadPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
 
-  const radios = document.querySelectorAll('input[type="radio"]:checked');
-  radios.forEach(radio => {
-    const itemLabel = radio.closest('tr').querySelector('td:nth-child(2)').textContent.trim();
-    const nilai = radio.value;
-    hasil += `${itemLabel}: ${nilai}\n`;
+    const tanggal = document.querySelector('input[name="tanggal"]').value;
+    const id = document.querySelector('input[name="id"]').value;
+    const unit = document.querySelector('select[name="unit"]')?.value || document.querySelector('input[name="unit"]')?.value;
 
-    const inputKet = radio.closest('tr').querySelector('input[type="text"]');
-    if (nilai === "R" && inputKet && inputKet.value.trim() !== "") {
-      hasil += `  Keterangan: ${inputKet.value.trim()}\n`;
-    }
-  });
+    let y = 10;
+    doc.text(`Tanggal: ${tanggal}`, 10, y); y += 10;
+    doc.text(`No ID: ${id}`, 10, y); y += 10;
+    doc.text(`Unit: ${unit}`, 10, y); y += 10;
+    doc.text('==========================', 10, y); y += 10;
 
-  const blob = new Blob([hasil], { type: "text/plain" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `P2H_${unit}_${tanggal}.txt`;
-  a.click();
-  URL.revokeObjectURL(url);
-}
+    const radios = document.querySelectorAll('input[type="radio"]:checked');
+    radios.forEach(radio => {
+      const label = radio.closest('.item-row').querySelector('.item-name')?.textContent || 'Item';
+      const nilai = radio.value;
+      doc.text(`${label}: ${nilai}`, 10, y);
+      y += 10;
+
+      if (nilai === 'Rusak') {
+        const keterangan = radio.closest('.item-row').querySelector('textarea')?.value || '';
+        doc.text(`  → Keterangan: ${keterangan}`, 10, y);
+        y += 10;
+      }
+    });
+
+    doc.save(`${unit || "P2H"}_${tanggal}.pdf`);
+  }
 </script>
-
+<button onclick="downloadPDF()">Simpan Bukti (PDF)</button>
   
 </body>
 </html>
