@@ -71,7 +71,8 @@
     <div id="itemsContainer"></div>
 
     <button type="submit" class="submit-btn">Kirim</button>
-    <button type="button" class="pdf-btn" onclick="downloadPDF()">Simpan Bukti (PDF)</button>
+    <button type="button" onclick="downloadPDF()" class="pdf-btn">Simpan & Tampilkan PDF</button>
+    </form>
   </form>
 
 <script>
@@ -146,6 +147,7 @@
     const pdfBlob = doc.output("blob");
     const blobUrl = URL.createObjectURL(pdfBlob);
     window.open(blobUrl); // tampilkan preview
+    doc.save(`P2H-${id || 'noname'}.pdf`); // simpan otomatis
   }
 
   // Prevent submit reload
