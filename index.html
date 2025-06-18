@@ -1,69 +1,33 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>P2H Form</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 10px;
+    body { font-family: Arial, sans-serif; padding: 10px; }
+    .item-row { margin-bottom: 20px; border-bottom: 1px solid #ccc; padding-bottom: 10px; }
+    .item-name { font-weight: bold; margin-bottom: 5px; }
+    .radio-group { display: flex; gap: 10px; margin-bottom: 5px; }
+    .keterangan-rusak { display: none; }
+    input[type="text"], input[type="date"], select {
+      width: 100%; padding: 6px; margin: 5px 0;
     }
-
-    .item-row {
-      margin-bottom: 20px;
-      border-bottom: 1px solid #ccc;
-      padding-bottom: 10px;
-    }
-
-    .item-name {
-      font-size: 15px;
-      font-weight: bold;
-      margin-bottom: 8px;
-    }
-
-    .radio-group {
-      display: flex;
-      gap: 15px;
-      margin-bottom: 10px;
-    }
-
-    .radio-group label {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      font-weight: normal;
-    }
-
-    .keterangan-rusak {
-      display: none;
-      margin-top: 5px;
-    }
-
-    input[type="text"], input[type="date"] {
-      width: 100%;
-      padding: 5px;
-      margin-bottom: 10px;
-    }
-
-    .submit-btn {
-      padding: 10px 20px;
-      font-size: 16px;
+    .submit-btn, .pdf-btn {
+      padding: 10px 15px; font-size: 16px; margin-top: 10px;
     }
   </style>
-  
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
 </head>
 <body>
+
   <h2>Form Pemeriksaan P2H</h2>
   <form id="p2hForm">
     <label>Tanggal: <input type="date" name="tanggal" required></label><br>
     <label>No. ID: <input type="text" name="id" required></label><br>
-    <label>Unit / Alat:
-  <select name="unit" id="unitSelect" required>
-    <option value="">-- Pilih Unit --</option>
-    <option value="AM129">AM129</option>
+    <label>Unit:
+      <select name="unit" required>
+        <option value="">-- Pilih Unit --</option>
     <option value="AM71">AM71</option>
     <option value="AM84">AM84</option>
     <option value="AM85">AM85</option>
@@ -84,6 +48,7 @@
     <option value="AMLV124">AMLV124</option>
     <option value="AMLV125">AMLV125</option>
     <option value="AMLV128">AMLV128</option>
+    <option value="AMLV129">AM129</option>
     <option value="AMLV130">AMLV130</option>
     <option value="AMLV134">AMLV134</option>
     <option value="AMLV135">AMLV135</option>
@@ -99,119 +64,96 @@
     <option value="AMLV91">AMLV91</option>
     <option value="AMLV92">AMLV92</option>
     <option value="AMLV93">AMLV93</option>
-  </select>
-</label>
+      </select>
+    </label>
 
-   <p class="keterangan"><strong>Keterangan:</strong> B = Bagus, R = Rusak, NA = Tidak Diperlukan</p>
+    <p><strong>Keterangan:</strong> B = Bagus, R = Rusak, NA = Tidak Diperlukan</p>
     <div id="itemsContainer"></div>
 
     <button type="submit" class="submit-btn">Kirim</button>
+    <button type="button" class="pdf-btn" onclick="downloadPDF()">Simpan Bukti (PDF)</button>
   </form>
 
-  <script>
-    const items = [
-      "Kondisi Kemudi",
-      "Sabuk pengaman",
-      "*Rem kaki & tangan <7 klik*",
-      "Lampu depan/kota/sein/atas/rotari",	
-      "Lampu belakang/stop/sein",
-      "Alarm mundur",
-      "Air radiator",
-      "Oli Mesin",
-      "Minyak rem & power steering",
-      "Fun belt",
-      "Air pembersih kaca",
-      "Jarum penunjuk berfungsi",
-      "Lampu indikator",
-      "Kondisi ban",
-      "Wiper, Spion",	
-      "Klakson",
-      "Nomor kendaraan & pita reflektor",
-      "Stiker next service",
-      "Segi tiga pengaman",
-      "Dongkrak & Kunci roda",
-      "Alat Pemadam",
-      "Kotak P3K",
-      "Tempat tiang bendera",
-      "Radio Komunikasi"
-    ];
+<script>
+  const items = [
+    "Kondisi Kemudi", "Sabuk pengaman", "Rem kaki & tangan <7 klik",
+    "Lampu depan/kota/sein/atas/rotari", "Lampu belakang/stop/sein",
+    "Alarm mundur", "Air radiator", "Oli Mesin", "Minyak rem & power steering",
+    "Fun belt", "Air pembersih kaca", "Jarum penunjuk berfungsi", "Lampu indikator",
+    "Kondisi ban", "Wiper, Spion", "Klakson", "Nomor kendaraan & pita reflektor",
+    "Stiker next service", "Segi tiga pengaman", "Dongkrak & Kunci roda",
+    "Alat Pemadam", "Kotak P3K", "Tempat tiang bendera", "Radio Komunikasi"
+  ];
 
-    const container = document.getElementById('itemsContainer');
+  const container = document.getElementById("itemsContainer");
 
-    items.forEach((item, index) => {
-      const itemId = `item_${index}`;
-      const div = document.createElement('div');
-      div.className = 'item-row';
-      div.innerHTML = `
-        <div class="item-name">${item}</div>
-        <div class="radio-group">
-          <label><input type="radio" name="${itemId}" value="B"> B</label>
-          <label><input type="radio" name="${itemId}" value="R"> R</label>
-          <label><input type="radio" name="${itemId}" value="NA"> NA</label>
-        </div>
-        <div class="keterangan-rusak" id="ket_${itemId}">
-          <input type="text" name="ket_${itemId}" placeholder="Tulis keterangan kerusakan...">
-        </div>
-      `;
-      container.appendChild(div);
+  items.forEach((item, index) => {
+    const id = `item_${index}`;
+    const div = document.createElement("div");
+    div.className = "item-row";
+    div.innerHTML = `
+      <div class="item-name">${item}</div>
+      <div class="radio-group">
+        <label><input type="radio" name="${id}" value="B"> B</label>
+        <label><input type="radio" name="${id}" value="R"> R</label>
+        <label><input type="radio" name="${id}" value="NA"> NA</label>
+      </div>
+      <div class="keterangan-rusak" id="ket_${id}">
+        <input type="text" name="ket_${id}" placeholder="Keterangan jika rusak...">
+      </div>
+    `;
+    container.appendChild(div);
 
-      // Event listener saat memilih R
-      div.querySelectorAll(`input[name="${itemId}"]`).forEach(radio => {
-        radio.addEventListener('change', () => {
-          const ketBox = document.getElementById(`ket_${itemId}`);
-          if (radio.value === 'R') {
-            ketBox.style.display = 'block';
-          } else {
-            ketBox.style.display = 'none';
-          }
-        });
+    div.querySelectorAll(`input[name="${id}"]`).forEach(radio => {
+      radio.addEventListener("change", (e) => {
+        const ketBox = document.getElementById(`ket_${id}`);
+        ketBox.style.display = e.target.value === "R" ? "block" : "none";
       });
     });
-  </script>
-  
-<script>
-  function downloadPDF() {
+  });
+
+  async function downloadPDF() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
-
     let y = 10;
 
-    // Ambil data utama
-    const tanggal = document.querySelector('input[name="tanggal"]')?.value || "";
-    const id = document.querySelector('input[name="id"]')?.value || "";
-    const unit = document.querySelector('select[name="unit"]')?.value || document.querySelector('input[name="unit"]')?.value || "";
+    const tanggal = document.querySelector('[name="tanggal"]').value;
+    const id = document.querySelector('[name="id"]').value;
+    const unit = document.querySelector('[name="unit"]').value;
 
     doc.setFontSize(14);
     doc.text("Bukti Pemeriksaan P2H", 20, y); y += 10;
-    doc.text(`Tanggal: ${tanggal}`, 10, y); y += 10;
-    doc.text(`No ID: ${id}`, 10, y); y += 10;
-    doc.text(`Unit: ${unit}`, 10, y); y += 10;
-    doc.text('==========================', 10, y); y += 10;
+    doc.setFontSize(12);
+    doc.text(`Tanggal: ${tanggal}`, 10, y); y += 8;
+    doc.text(`No ID: ${id}`, 10, y); y += 8;
+    doc.text(`Unit: ${unit}`, 10, y); y += 8;
+    doc.text('=========================', 10, y); y += 10;
 
-    // Loop radio button
-    const radios = document.querySelectorAll('input[type="radio"]:checked');
-    radios.forEach(radio => {
-      const row = radio.closest('.item-row');
-      const label = row.querySelector('.item-name')?.textContent || 'Item';
-      const nilai = radio.value;
-      doc.text(`${label}: ${nilai}`, 10, y);
-      y += 10;
-
-      if (nilai === 'Rusak') {
-        const keterangan = row.querySelector('textarea')?.value || '';
-        doc.text(`  → Keterangan: ${keterangan}`, 10, y);
-        y += 10;
+    items.forEach((item, index) => {
+      const name = `item_${index}`;
+      const radio = document.querySelector(`input[name="${name}"]:checked`);
+      if (radio) {
+        doc.text(`${item}: ${radio.value}`, 10, y); y += 8;
+        if (radio.value === "R") {
+          const ket = document.querySelector(`[name="ket_${name}"]`).value;
+          if (ket.trim()) {
+            doc.text(`  → Keterangan: ${ket}`, 10, y); y += 8;
+          }
+        }
       }
     });
 
-    // Tampilkan di layar, bukan download
     const pdfBlob = doc.output("blob");
     const blobUrl = URL.createObjectURL(pdfBlob);
-    window.open(blobUrl); // ini tampilkan preview
+    window.open(blobUrl); // tampilkan preview
   }
+
+  // Prevent submit reload
+  document.getElementById("p2hForm").addEventListener("submit", function(e){
+    e.preventDefault();
+    alert("Data berhasil disimpan (belum kirim ke server ya, bro)");
+  });
 </script>
 
-<button onclick="downloadPDF()">Simpan Bukti (PDF)</button>
-  
 </body>
 </html>
