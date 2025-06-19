@@ -113,73 +113,77 @@
     });
 
     async function downloadPDF() {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-      let y = 10;
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  let y = 10;
 
-      const tanggal = document.querySelector('[name="tanggal"]').value;
-      const id = document.querySelector('[name="id"]').value;
-      const unit = document.querySelector('[name="unit"]').value;
-      const matiK = document.querySelector('[name="Mati_komisioning"]').value;
+  const tanggal = document.querySelector('[name="tanggal"]').value;
+  const id = document.querySelector('[name="id"]').value;
+  const unit = document.querySelector('[name="unit"]').value;
+  const km = document.querySelector('[name="Kilo_Meter"]').value; // Sudah dibenerin
+  const matiK = document.querySelector('[name="Mati_komisioning"]').value;
 
-      doc.setFontSize(14);
-      doc.text("Bukti Pemeriksaan P2H", 20, y); y += 10;
-      doc.setFontSize(12);
-      doc.text(`Tanggal: ${tanggal}`, 10, y); y += 8;
-      doc.text(`No ID: ${id}`, 10, y); y += 8;
-      doc.text(`Unit: ${unit}`, 10, y); y += 8;
-      doc.text(`Mati Komisioning: ${matiK}`, 10, y); y += 8;
-      doc.text('=========================', 10, y); y += 10;
+  doc.setFontSize(14);
+  doc.text("Bukti Pemeriksaan P2H", 20, y); y += 10;
+  doc.setFontSize(12);
+  doc.text(`Tanggal: ${tanggal}`, 10, y); y += 8;
+  doc.text(`No ID: ${id}`, 10, y); y += 8;
+  doc.text(`Unit: ${unit}`, 10, y); y += 8;
+  doc.text(`Kilo Meter: ${km}`, 10, y); y += 8;
+  doc.text(`Mati Komisioning: ${matiK}`, 10, y); y += 8;
+  doc.text('=========================', 10, y); y += 10;
 
-      const dataToSend = {
-        Tanggal: tanggal,
-        No_ID: id,
-        No_Unit: unit,
-        Mati_komisioning: matiK,
-      };
+  const dataToSend = {
+    Tanggal: tanggal,
+    No_ID: id,
+    No_Unit: unit,
+    Kilo_Meter: km,
+    Mati_komisioning: matiK,
+  };
 
-      items.forEach((item, index) => {
-        const name = `item_${index}`;
-        const radio = document.querySelector(`input[name="${name}"]:checked`);
-        const fieldName = item.replace(/[^\w]+/g, "_");
+  items.forEach((item, index) => {
+    const name = `item_${index}`;
+    const radio = document.querySelector(`input[name="${name}"]:checked`);
+    const fieldName = item.replace(/[^\w]+/g, "_");
 
-        if (radio) {
-          doc.text(`${item}: ${radio.value}`, 10, y); y += 8;
-          dataToSend[fieldName] = radio.value;
+    if (radio) {
+      doc.text(`${item}: ${radio.value}`, 10, y); y += 8;
+      dataToSend[fieldName] = radio.value;
 
-          if (radio.value === "R") {
-            const ket = document.querySelector(`[name="ket_${name}"]`).value;
-            if (ket.trim()) {
-              doc.text(`  → Keterangan: ${ket}`, 10, y); y += 8;
-              dataToSend[`ket_${fieldName}`] = ket;
-            }
-          }
-        } else {
-          dataToSend[fieldName] = "";
+      if (radio.value === "R") {
+        const ket = document.querySelector(`[name="ket_${name}"]`).value;
+        if (ket.trim()) {
+          doc.text(`  → Keterangan: ${ket}`, 10, y); y += 8;
+          dataToSend[`ket_${fieldName}`] = ket;
         }
-      });
-
-      // Kirim ke Google Spreadsheet
-      fetch("https://script.google.com/macros/s/AKfycbwNmefQP_K6CU3AtqV2OEbFhYMIQtvrN9MdJbdKbJXEx-WnBlqTRdvmI3SXKWx1q_VE/exec", {
-        method: "POST",
-        body: JSON.stringify(dataToSend),
-        headers: { "Content-Type": "application/json" }
-      })
-      .then(res => res.text())
-      .then(res => {
-        console.log("✅ Data terkirim:", res);
-        alert("✅ Data terkirim ke spreadsheet.");
-      })
-      .catch(err => {
-        console.error("❌ Gagal kirim:", err);
-        alert("❌ Gagal kirim ke spreadsheet.");
-      });
-
-      const pdfBlob = doc.output("blob");
-      const blobUrl = URL.createObjectURL(pdfBlob);
-      window.open(blobUrl);
-      doc.save(`P2H-${id || 'noname'}.pdf`);
+      }
+    } else {
+      dataToSend[fieldName] = "";
     }
+  });
+
+  // Kirim ke Google Spreadsheet
+  fetch("https://script.google.com/macros/s/AKfycbwNmefQP_K6CU3AtqV2OEbFhYMIQtvrN9MdJbdKbJXEx-WnBlqTRdvmI3SXKWx1q_VE/exec", {
+    method: "POST",
+    body: JSON.stringify(dataToSend),
+    headers: { "Content-Type": "application/json" }
+  })
+  .then(res => res.text())
+  .then(res => {
+    console.log("✅ Data terkirim:", res);
+    alert("✅ Data terkirim ke spreadsheet.");
+  })
+  .catch(err => {
+    console.error("❌ Gagal kirim:", err);
+    alert("❌ Gagal kirim ke spreadsheet.");
+  });
+
+  const pdfBlob = doc.output("blob");
+  const blobUrl = URL.createObjectURL(pdfBlob);
+  window.open(blobUrl);
+  doc.save(`P2H-${id || 'noname'}.pdf`);
+}
+
   </script>
 </body>
 </html>
