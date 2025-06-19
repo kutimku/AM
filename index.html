@@ -168,12 +168,7 @@ fetch("https://script.google.com/macros/s/AKfycbwsGGjyVyhiMQHChWl3oq1CY78BL9AYgD
   body: JSON.stringify(dataToSend),
   headers: { "Content-Type": "application/json" }
 })
-      
-  fetch("https://script.google.com/macros/s/AKfycbwsGGjyVyhiMQHChWl3oq1CY78BL9AYgDUYounIcqjon7sc9X1W_m0p3tg7kirlz-kB/exec", {
-  method: "POST",
-  body: JSON.stringify(data),
-  headers: { "Content-Type": "application/json" }
-})
+   
   .then(res => res.text())
   .then(res => {
     console.log("✅ Data terkirim:", res);
